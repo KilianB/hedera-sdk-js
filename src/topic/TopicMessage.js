@@ -15,6 +15,7 @@ export default class TopicMessage {
      * @param {Timestamp} props.consensusTimestamp
      * @param {Uint8Array} props.contents
      * @param {Uint8Array} props.runningHash
+     * @param {Long} props.payerAccountId
      * @param {Long} props.sequenceNumber
      * @param {TopicMessageChunk[]} props.chunks
      */
@@ -23,6 +24,8 @@ export default class TopicMessage {
         this.consensusTimestamp = props.consensusTimestamp;
         /** @readonly */
         this.contents = props.contents;
+        /** @readonly */
+        this.payerAccountId = props.payerAccountId;
         /** @readonly */
         this.runningHash = props.runningHash;
         /** @readonly */
@@ -39,6 +42,11 @@ export default class TopicMessage {
      * @returns {TopicMessage}
      */
     static _ofSingle(response) {
+        //Workaround until HIP-171 is implemented.
+        const payerAccountId =
+            /** @type {Long} */
+            response.chunkInfo?.initialTransactionID?.accountID?.accountNum;
+
         return new TopicMessage({
             consensusTimestamp: Timestamp._fromProtobuf(
                 /** @type {proto.ITimestamp} */
@@ -46,6 +54,7 @@ export default class TopicMessage {
             ),
             contents:
                 response.message != null ? response.message : new Uint8Array(),
+            payerAccountId: payerAccountId || Long.ZERO,
             runningHash:
                 response.runningHash != null
                     ? response.runningHash
@@ -88,6 +97,11 @@ export default class TopicMessage {
                     ? last.sequenceNumber
                     : Long.fromValue(last.sequenceNumber)
                 : Long.ZERO;
+
+        const payerAccountId =
+            /** @type {Long} */
+            responses[0].chunkInfo?.initialTransactionID?.accountID
+                ?.accountNum || Long.ZERO;
 
         responses.sort((a, b) =>
             (a != null
@@ -132,6 +146,7 @@ export default class TopicMessage {
         return new TopicMessage({
             consensusTimestamp,
             contents,
+            payerAccountId,
             runningHash,
             sequenceNumber,
             chunks,
