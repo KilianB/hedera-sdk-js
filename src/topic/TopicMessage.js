@@ -1,6 +1,8 @@
 import Timestamp from "../Timestamp.js";
 import TopicMessageChunk from "./TopicMessageChunk.js";
 import Long from "long";
+import AccountId from "../account/AccountId.js";
+import TransactionId from "../transaction/TransactionId.js";
 
 /**
  * @namespace proto
@@ -15,7 +17,8 @@ export default class TopicMessage {
      * @param {Timestamp} props.consensusTimestamp
      * @param {Uint8Array} props.contents
      * @param {Uint8Array} props.runningHash
-     * @param {Long} props.payerAccountId
+     * @param {AccountId | null} props.payerAccountId
+     * @param {TransactionId | null} props.transactionId
      * @param {Long} props.sequenceNumber
      * @param {TopicMessageChunk[]} props.chunks
      */
@@ -26,6 +29,8 @@ export default class TopicMessage {
         this.contents = props.contents;
         /** @readonly */
         this.payerAccountId = props.payerAccountId;
+        /** @readonly */
+        this.transactionId = props.transactionId;
         /** @readonly */
         this.runningHash = props.runningHash;
         /** @readonly */
@@ -44,8 +49,7 @@ export default class TopicMessage {
     static _ofSingle(response) {
         //Workaround until HIP-171 is implemented.
         const payerAccountId =
-            /** @type {Long} */
-            response.chunkInfo?.initialTransactionID?.accountID?.accountNum;
+            response.chunkInfo?.initialTransactionID?.accountID;
 
         return new TopicMessage({
             consensusTimestamp: Timestamp._fromProtobuf(
@@ -54,7 +58,14 @@ export default class TopicMessage {
             ),
             contents:
                 response.message != null ? response.message : new Uint8Array(),
-            payerAccountId: payerAccountId || Long.ZERO,
+            payerAccountId: payerAccountId
+                ? AccountId._fromProtobuf(payerAccountId)
+                : null,
+            transactionId: response.chunkInfo?.initialTransactionID
+                ? TransactionId._fromProtobuf(
+                      response.chunkInfo?.initialTransactionID
+                  )
+                : null,
             runningHash:
                 response.runningHash != null
                     ? response.runningHash
@@ -98,10 +109,18 @@ export default class TopicMessage {
                     : Long.fromValue(last.sequenceNumber)
                 : Long.ZERO;
 
-        const payerAccountId =
-            /** @type {Long} */
-            responses[0].chunkInfo?.initialTransactionID?.accountID
-                ?.accountNum || Long.ZERO;
+        const payerAccountId = responses[0].chunkInfo?.initialTransactionID
+            ?.accountID
+            ? AccountId._fromProtobuf(
+                  responses[0].chunkInfo?.initialTransactionID?.accountID
+              )
+            : null;
+
+        const transactionId = responses[0].chunkInfo?.initialTransactionID
+            ? TransactionId._fromProtobuf(
+                  responses[0].chunkInfo?.initialTransactionID
+              )
+            : null;
 
         responses.sort((a, b) =>
             (a != null
@@ -147,6 +166,7 @@ export default class TopicMessage {
             consensusTimestamp,
             contents,
             payerAccountId,
+            transactionId,
             runningHash,
             sequenceNumber,
             chunks,
