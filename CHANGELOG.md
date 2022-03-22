@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v2.99.0-HIP171
+
+## Added
+
+ * add TransactionId and payerAccountId to HCS Topic Message Query response
+
 ## v2.11.3
 
 ### Fixed
@@ -162,7 +168,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
- * Support for regenerating transaction IDs on demand if a request 
+ * Support for regenerating transaction IDs on demand if a request
    responses with `TRANSACITON_EXPIRED`
 
 ### Fixed
@@ -187,7 +193,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
- * Support for regenerating transaction IDs on demand if a request 
+ * Support for regenerating transaction IDs on demand if a request
    responses with `TRANSACITON_EXPIRED`
 
 ## v2.7.0
@@ -460,7 +466,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
  * Free queries should not longer attempt to sign payment transactions
- * All enitty IDs within response should no longer contain a checskum. 
+ * All enitty IDs within response should no longer contain a checskum.
    Use `*Id.toStringWithChecksum(Client)` to stringify with a checksum
  * `ReceiptStatusError` should contain a properly filled out `TransactionReceipt`
 

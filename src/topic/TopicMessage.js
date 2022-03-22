@@ -1,5 +1,7 @@
 import Timestamp from "../Timestamp.js";
 import TopicMessageChunk from "./TopicMessageChunk.js";
+import TransactionId from "../transaction/TransactionId.js";
+import AccountId from "../account/AccountId.js";
 import Long from "long";
 
 /**
@@ -15,6 +17,8 @@ export default class TopicMessage {
      * @param {Timestamp} props.consensusTimestamp
      * @param {Uint8Array} props.contents
      * @param {Uint8Array} props.runningHash
+     * @param {AccountId | null} props.payerAccountId
+     * @param {TransactionId | null} props.transactionId
      * @param {Long} props.sequenceNumber
      * @param {TopicMessageChunk[]} props.chunks
      */
@@ -23,6 +27,10 @@ export default class TopicMessage {
         this.consensusTimestamp = props.consensusTimestamp;
         /** @readonly */
         this.contents = props.contents;
+        /** @readonly */
+        this.payerAccountId = props.payerAccountId;
+        /** @readonly */
+        this.transactionId = props.transactionId;
         /** @readonly */
         this.runningHash = props.runningHash;
         /** @readonly */
@@ -39,6 +47,19 @@ export default class TopicMessage {
      * @returns {TopicMessage}
      */
     static _ofSingle(response) {
+        //Workaround until HIP-171 is implemented.
+        const payerAccountIdProto =
+            response.chunkInfo?.initialTransactionID?.accountID;
+        const payerAccountId = payerAccountIdProto
+            ? AccountId._fromProtobuf(payerAccountIdProto)
+            : null;
+
+        const transactionIdProto = response.chunkInfo?.initialTransactionID;
+
+        const transactionId = transactionIdProto
+            ? TransactionId._fromProtobuf(transactionIdProto)
+            : null;
+
         return new TopicMessage({
             consensusTimestamp: Timestamp._fromProtobuf(
                 /** @type {proto.ITimestamp} */
@@ -46,6 +67,8 @@ export default class TopicMessage {
             ),
             contents:
                 response.message != null ? response.message : new Uint8Array(),
+            payerAccountId,
+            transactionId,
             runningHash:
                 response.runningHash != null
                     ? response.runningHash
@@ -129,9 +152,23 @@ export default class TopicMessage {
             offset += /** @type {Uint8Array} */ (value.message).length;
         });
 
+        const payerAccountIdProto =
+            responses[0].chunkInfo?.initialTransactionID?.accountID;
+        const payerAccountId = payerAccountIdProto
+            ? AccountId._fromProtobuf(payerAccountIdProto)
+            : null;
+
+        const transactionIdProto = responses[0].chunkInfo?.initialTransactionID;
+
+        const transactionId = transactionIdProto
+            ? TransactionId._fromProtobuf(transactionIdProto)
+            : null;
+
         return new TopicMessage({
             consensusTimestamp,
             contents,
+            payerAccountId,
+            transactionId,
             runningHash,
             sequenceNumber,
             chunks,
