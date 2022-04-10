@@ -37,9 +37,8 @@ import * as util from "./util.js";
  * @property {string | null} checksum
  */
 
-const regex = RegExp(
-    "^(0|(?:[1-9]\\d*))\\.(0|(?:[1-9]\\d*))\\.(0|(?:[1-9]\\d*))(?:-([a-z]{5}))?$"
-);
+const regex =
+    /"^(0|(?:[1-9]\\d*))\\.(0|(?:[1-9]\\d*))\\.(0|(?:[1-9]\\d*))(?:-([a-z]{5}))?$/;
 
 /**
  * This regex supports entity IDs
@@ -57,6 +56,7 @@ const ENTITY_ID_REGEX = /^(\d+)(?:\.(\d+)\.([a-fA-F0-9]+))?(?:-([a-z]{5}))?$/;
  * @returns {IEntityIdResult}
  */
 export function constructor(props, realmOrNull, numOrNull) {
+    //NOSONAR
     if (
         (realmOrNull == null && numOrNull != null) ||
         (realmOrNull != null && numOrNull == null)
@@ -229,7 +229,7 @@ export function toSolidityAddress(address) {
  *   noChecksumFormat;   //the address in no-checksum format
  *   withChecksumFormat; //the address in with-checksum format
  *
- * @param {string} ledgerId
+ * @param {Uint8Array} ledgerId
  * @param {string} addr
  * @returns {ParseAddressResult}
  */
@@ -246,8 +246,8 @@ export function _parseAddress(ledgerId, addr) {
     ];
     let ad = `${a[0].toString()}.${a[1].toString()}.${a[2].toString()}`;
     let c = _checksum(ledgerId, ad);
-    let s = match[4] === undefined ? 2 : c == match[4] ? 3 : 1; //the status
-    let result = {
+    let s = match[4] === undefined ? 2 : c == match[4] ? 3 : 1; //NOSONAR
+    return {
         status: s,
         num1: a[0],
         num2: a[1],
@@ -257,13 +257,12 @@ export function _parseAddress(ledgerId, addr) {
         noChecksumFormat: ad,
         withChecksumFormat: `${ad}-${c}`,
     };
-    return result;
 }
 
 /**
  * Given an address like "0.0.123", return a checksum like "laujm"
  *
- * @param {string} ledgerId
+ * @param {Uint8Array} ledgerId
  * @param {string} addr
  * @returns {string}
  */
@@ -281,12 +280,11 @@ export function _checksum(ledgerId, addr) {
     const m = 1000003; // Min prime greater than a million. Used for the final permutation.
     const w = 31; // Sum s of digit values weights them by powers of w. Should be coprime to p5.
 
-    let id = ledgerId + "000000000000";
-    let h = [];
-    for (var i = 0; i < id.length; i += 2) {
-        h.push(parseInt(id.substring(i, i + 2), 16));
-    }
+    let h = new Uint8Array(ledgerId.length + 6);
+    h.set(ledgerId, 0);
+    h.set([0, 0, 0, 0, 0, 0], ledgerId.length);
     for (let i = 0; i < addr.length; i++) {
+        //NOSONAR
         d.push(addr[i] === "." ? 10 : parseInt(addr[i], 10));
     }
     for (let i = 0; i < d.length; i++) {
@@ -324,7 +322,7 @@ export function validateChecksum(shard, realm, num, checksum, client) {
     }
 
     const expectedChecksum = _checksum(
-        client._network._ledgerId._toStringForChecksum(),
+        client._network._ledgerId._ledgerId,
         `${shard.toString()}.${realm.toString()}.${num.toString()}`
     );
 
@@ -351,10 +349,7 @@ export function toStringWithChecksum(string, client) {
         );
     }
 
-    const checksum = _checksum(
-        client._network._ledgerId._toStringForChecksum(),
-        string
-    );
+    const checksum = _checksum(client._network._ledgerId._ledgerId, string);
 
     return `${string}-${checksum}`;
 }

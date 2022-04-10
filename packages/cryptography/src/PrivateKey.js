@@ -9,6 +9,7 @@ import { read as readPem } from "./encoding/pem.js";
 import * as hex from "./encoding/hex.js";
 import * as slip10 from "./primitive/slip10.js";
 import * as derive from "./util/derive.js";
+import CACHE from "./Cache.js";
 
 /**
  * @typedef {object} ProtoSignaturePair
@@ -263,7 +264,6 @@ export default class PrivateKey extends Key {
      * @throws If this key does not support derivation.
      */
     async derive(index) {
-        // return new PrivateKey(await this._key.derive(index));
         if (this._key._chainCode == null) {
             throw new Error("this private key does not support key derivation");
         }
@@ -465,3 +465,6 @@ export default class PrivateKey extends Key {
         return createKeystore(this.toBytesRaw(), passphrase);
     }
 }
+
+CACHE.privateKeyConstructor = (key) => new PrivateKey(key);
+CACHE.privateKeyFromBytes = (bytes) => PrivateKey.fromBytes(bytes);

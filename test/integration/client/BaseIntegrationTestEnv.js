@@ -1,7 +1,6 @@
 import {
     PrivateKey,
     AccountCreateTransaction,
-    AccountDeleteTransaction,
     TokenDeleteTransaction,
     Hbar,
     AccountId,
@@ -92,7 +91,13 @@ export default class BaseIntegrationTestEnv {
         const originalOperatorKey = client.operatorAccountKey;
         const originalOperatorId = client.operatorAccountId;
 
-        await client.setMaxNodeAttempts(1).pingAll();
+        client.setMaxNodeAttempts(1)
+            .setNodeMinBackoff(0)
+            .setNodeMaxBackoff(0)
+            .setNodeMinReadmitPeriod(0)
+            .setNodeMaxReadmitPeriod(0);
+
+        await client.pingAll();
 
         const network = {};
         const nodeAccountIds = options.nodeAccountIds != null ? options.nodeAccountIds : 1;
@@ -144,13 +149,13 @@ export default class BaseIntegrationTestEnv {
             }
         }
 
-        if (!this.throwaway && this.operatorKey.toString() !== this.originalOperatorId) {
-            await (await new AccountDeleteTransaction()
-                .setAccountId(this.operatorId)
-                .setTransferAccountId(this.originalOperatorId)
-                .execute(this.client)
-            ).getReceipt(this.client);
-        }
+        // if (!this.throwaway && this.operatorId.toString() !== this.originalOperatorId.toString()) {
+        //     await (await new AccountDeleteTransaction()
+        //         .setAccountId(this.operatorId)
+        //         .setTransferAccountId(this.originalOperatorId)
+        //         .execute(this.client)
+        //     ).getReceipt(this.client);
+        // }
 
         this.client.close();
     }

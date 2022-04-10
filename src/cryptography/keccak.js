@@ -43,6 +43,7 @@ const Keccak = (bits) => ({
 });
 
 /** @type {(state: KeccakT, message: string | number[]) => string} */
+//NOSONAR
 const update = (state, /** @type {string | number[]} */ message) => {
     var length = message.length,
         blocks = state.blocks,
@@ -84,7 +85,7 @@ const update = (state, /** @type {string | number[]} */ message) => {
                     code =
                         0x10000 +
                         (((code & 0x3ff) << 10) |
-                            (message.charCodeAt(++index) & 0x3ff));
+                            (message.charCodeAt(++index) & 0x3ff)); //NOSONAR
                     blocks[i >> 2] |= (0xf0 | (code >> 18)) << SHIFT[i++ & 3];
                     blocks[i >> 2] |=
                         (0x80 | ((code >> 12) & 0x3f)) << SHIFT[i++ & 3];
@@ -128,7 +129,7 @@ const update = (state, /** @type {string | number[]} */ message) => {
     var hex = "";
     var block;
     var j = 0;
-    i = 0;
+    i = 0; //NOSONAR
     while (j < outputBlocks) {
         for (i = 0; i < blockCount && j < outputBlocks; ++i, ++j) {
             block = s[i];
@@ -144,7 +145,7 @@ const update = (state, /** @type {string | number[]} */ message) => {
         }
         if (j % blockCount === 0) {
             f(s);
-            i = 0;
+            i = 0; //NOSONAR
         }
     }
     // @ts-ignore
@@ -407,7 +408,7 @@ const keccak = (/** @type {number} */ bits) => (/** @type {string} */ str) => {
         msg = str;
     }
     // @ts-ignore
-    return update(Keccak(bits, bits), msg);
+    return update(Keccak(bits), msg);
 };
 
 /**

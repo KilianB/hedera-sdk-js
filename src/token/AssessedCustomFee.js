@@ -4,7 +4,7 @@ import Long from "long";
 
 /**
  * @namespace proto
- * @typedef {import("@hashgraph/proto").IAssessedCustomFee} proto.IAssessedCustomFee
+ * @typedef {import("@hashgraph/proto").proto.IAssessedCustomFee} HashgraphProto.proto.IAssessedCustomFee
  */
 
 export default class AssessedCustomFee {
@@ -19,7 +19,7 @@ export default class AssessedCustomFee {
         /**
          * @type {?AccountId}
          */
-        this._feeCollectorAccountId;
+        this._feeCollectorAccountId = null;
 
         if (props.feeCollectorAccountId != null) {
             this.setFeeCollectorAccountId(props.feeCollectorAccountId);
@@ -28,7 +28,7 @@ export default class AssessedCustomFee {
         /**
          * @type {?TokenId}
          */
-        this._tokenId;
+        this._tokenId = null;
 
         if (props.tokenId != null) {
             this.setTokenId(props.tokenId);
@@ -37,7 +37,7 @@ export default class AssessedCustomFee {
         /**
          * @type {?Long}
          */
-        this._amount;
+        this._amount = null;
 
         if (props.amount != null) {
             this.setAmount(props.amount);
@@ -46,7 +46,7 @@ export default class AssessedCustomFee {
         /**
          * @type {?AccountId[]}
          */
-        this._payerAccountIds;
+        this._payerAccountIds = null;
 
         if (props.payerAccountIds != null) {
             this.setPayerAccountIds(props.payerAccountIds);
@@ -124,7 +124,7 @@ export default class AssessedCustomFee {
 
     /**
      * @internal
-     * @param {proto.IAssessedCustomFee} fee
+     * @param {HashgraphProto.proto.IAssessedCustomFee} fee
      * @returns {AssessedCustomFee}
      */
     static _fromProtobuf(fee) {
@@ -150,7 +150,7 @@ export default class AssessedCustomFee {
     /**
      * @internal
      * @abstract
-     * @returns {proto.IAssessedCustomFee}
+     * @returns {HashgraphProto.proto.IAssessedCustomFee}
      */
     _toProtobuf() {
         return {

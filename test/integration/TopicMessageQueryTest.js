@@ -22,6 +22,7 @@ describe("TopicMessageQuery", function () {
             });
 
         while (!finished && Date.now() < endTime) {
+            //NOSONAR
             await new Promise((resolved) => setTimeout(resolved, 5000));
         }
 

@@ -1,13 +1,15 @@
 import { expect } from "chai";
 
-import { ContractId, DelegateContractId, Key } from "../../src/exports.js";
+import { ContractId, DelegateContractId, Key } from "../../src/index.js";
 import Long from "long";
 
 describe("DelegateContractId", function () {
     it("constructors", function () {
-        new DelegateContractId(3);
-        new DelegateContractId(0, 0, 3);
-        new DelegateContractId({ shard: 0, realm: 0, num: 3 });
+        expect(() => new DelegateContractId(3)).to.not.throw();
+        expect(() => new DelegateContractId(0, 0, 3)).to.not.throw();
+        expect(
+            () => new DelegateContractId({ shard: 0, realm: 0, num: 3 })
+        ).to.not.throw();
     });
 
     it(".[to|from]Protobuf()", function () {

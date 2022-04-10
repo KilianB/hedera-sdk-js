@@ -4,7 +4,7 @@ import Hbar from "../Hbar.js";
 
 /**
  * @namespace proto
- * @typedef {import("@hashgraph/proto").ITokenAssociation} proto.ITokenAssociation
+ * @typedef {import("@hashgraph/proto").proto.ITokenAssociation} HashgraphProto.proto.ITokenAssociation
  */
 
 export default class TokenAssociation {
@@ -17,7 +17,7 @@ export default class TokenAssociation {
         /**
          * @type {?AccountId}
          */
-        this._accountId;
+        this._accountId = null;
 
         if (props.accountId != null) {
             this.setAccountId(props.accountId);
@@ -26,7 +26,7 @@ export default class TokenAssociation {
         /**
          * @type {?TokenId}
          */
-        this._tokenId;
+        this._tokenId = null;
 
         if (props.tokenId != null) {
             this.setTokenId(props.tokenId);
@@ -74,7 +74,7 @@ export default class TokenAssociation {
     /**
      * @internal
      * @abstract
-     * @param {proto.ITokenAssociation} association
+     * @param {HashgraphProto.proto.ITokenAssociation} association
      * @returns {TokenAssociation}
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -94,7 +94,7 @@ export default class TokenAssociation {
     /**
      * @internal
      * @abstract
-     * @returns {proto.ITokenAssociation}
+     * @returns {HashgraphProto.proto.ITokenAssociation}
      */
     _toProtobuf() {
         return {
