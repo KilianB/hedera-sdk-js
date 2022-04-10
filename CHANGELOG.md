@@ -4,12 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## v2.99.0-HIP171
+## v2.100.121-HIP171
 
-## Added
-
+### Added
  * add TransactionId and payerAccountId to HCS Topic Message Query response
-## v2.12.1
+### Fixed
+  * transaction.execute correctly takes timeout value into account https://github.com/hashgraph/hedera-sdk-js/issues/1064
+ ## v2.12.1
 
 ### Fixed
 
